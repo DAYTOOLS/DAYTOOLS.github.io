@@ -16,6 +16,7 @@ import Terms from "./pages/Terms";
 import SiteMap from "./pages/SiteMap";
 import Auth from "./pages/Auth";
 import Cart from "./pages/Cart";
+import Wishlist from "./pages/Wishlist";
 import Account from "./pages/Account";
 import HelpCenter from "./pages/HelpCenter";
 import ShippingInfo from "./pages/ShippingInfo";
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/terms" element={<Terms />} />
           <Route path="/sitemap" element={<SiteMap />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/account" element={<Account />} />
           <Route path="/help-center" element={<HelpCenter />} />

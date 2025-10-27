@@ -3,8 +3,9 @@ import { Heart, ShoppingCart, Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cartStorage } from "@/lib/cart-storage";
+import { wishlistStorage } from "@/lib/wishlist-storage";
 
 interface ProductCardProps {
   id: string;
@@ -28,7 +29,19 @@ const ProductCard = ({
   discount,
 }: ProductCardProps) => {
   const [loading, setLoading] = useState(false);
+  const [isInWishlist, setIsInWishlist] = useState(false);
   const discountPercent = discount || (originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0);
+
+  useEffect(() => {
+    setIsInWishlist(wishlistStorage.isInWishlist(id));
+
+    const handleWishlistUpdate = () => {
+      setIsInWishlist(wishlistStorage.isInWishlist(id));
+    };
+
+    window.addEventListener('wishlist-updated', handleWishlistUpdate);
+    return () => window.removeEventListener('wishlist-updated', handleWishlistUpdate);
+  }, [id]);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -55,6 +68,31 @@ const ProductCard = ({
     setLoading(false);
   };
 
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      if (isInWishlist) {
+        wishlistStorage.removeItem(id);
+        toast.success("Removed from wishlist");
+      } else {
+        wishlistStorage.addItem({
+          product_id: id,
+          product_title: title,
+          product_image: image,
+          product_price: price,
+          originalPrice,
+        });
+        toast.success("Added to wishlist!");
+      }
+      
+      window.dispatchEvent(new Event('wishlist-updated'));
+    } catch (error) {
+      toast.error("Failed to update wishlist");
+    }
+  };
+
   return (
     <Card className="group overflow-hidden hover:shadow-[var(--shadow-hover)] transition-[var(--transition-smooth)] cursor-pointer">
       <Link to={`/product/${id}`}>
@@ -69,8 +107,11 @@ const ProductCard = ({
               -{discountPercent}%
             </div>
           )}
-          <button className="absolute top-2 right-2 p-2 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-            <Heart className="h-4 w-4" />
+          <button 
+            onClick={handleToggleWishlist}
+            className="absolute top-2 right-2 p-2 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <Heart className={`h-4 w-4 ${isInWishlist ? 'fill-red-500 text-red-500' : ''}`} />
           </button>
         </div>
 
