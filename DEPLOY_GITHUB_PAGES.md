@@ -1,3 +1,7 @@
+# 🚀 Cara Deploy ke GitHub Pages - PANDUAN LENGKAP
+
+## ⚠️ PENTING: Halaman Blank? Ikuti Langkah Ini!
+
 # Cara Deploy ke GitHub Pages
 
 ## Opsi 1: Deploy Otomatis dengan GitHub Actions (Direkomendasikan)
