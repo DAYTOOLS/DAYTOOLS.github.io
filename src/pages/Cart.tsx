@@ -1,161 +1,61 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Trash2, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
-interface CartItem {
-  id: string;
-  product_id: string;
-  product_title: string;
-  product_image: string;
-  product_price: number;
-  quantity: number;
-}
+import { cartStorage, CartItem } from "@/lib/cart-storage";
 
 const Cart = () => {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        loadCartItems(session.user.id);
-      } else {
-        setLoading(false);
-      }
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        loadCartItems(session.user.id);
-      } else {
-        setLoading(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    loadCartItems();
   }, []);
 
-  const loadCartItems = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("cart_items")
-      .select("*")
-      .eq("user_id", userId);
-
-    if (error) {
+  const loadCartItems = () => {
+    try {
+      const items = cartStorage.getCart();
+      setCartItems(items);
+    } catch (error) {
       toast.error("Failed to load cart");
-    } else {
-      setCartItems(data || []);
     }
     setLoading(false);
   };
 
-  const updateQuantity = async (id: string, newQuantity: number) => {
+  const updateQuantity = (productId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
 
-    const { error } = await supabase
-      .from("cart_items")
-      .update({ quantity: newQuantity })
-      .eq("id", id);
-
-    if (error) {
-      toast.error("Failed to update quantity");
-    } else {
+    try {
+      cartStorage.updateQuantity(productId, newQuantity);
       setCartItems(cartItems.map(item => 
-        item.id === id ? { ...item, quantity: newQuantity } : item
+        item.product_id === productId ? { ...item, quantity: newQuantity } : item
       ));
+    } catch (error) {
+      toast.error("Failed to update quantity");
     }
   };
 
-  const removeItem = async (id: string) => {
-    const { error } = await supabase
-      .from("cart_items")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      toast.error("Failed to remove item");
-    } else {
-      setCartItems(cartItems.filter(item => item.id !== id));
+  const removeItem = (productId: string) => {
+    try {
+      cartStorage.removeItem(productId);
+      setCartItems(cartItems.filter(item => item.product_id !== productId));
       toast.success("Item removed from cart");
+    } catch (error) {
+      toast.error("Failed to remove item");
     }
   };
 
   const totalAmount = cartItems.reduce((sum, item) => sum + (item.product_price * item.quantity), 0);
 
-  const handleCheckout = async () => {
-    if (!user) {
-      toast.error("Please login to checkout");
-      navigate("/auth");
-      return;
-    }
-
-    const { data: order, error: orderError } = await supabase
-      .from("orders")
-      .insert({
-        user_id: user.id,
-        total_amount: totalAmount,
-        status: "pending"
-      })
-      .select()
-      .single();
-
-    if (orderError) {
-      toast.error("Failed to create order");
-      return;
-    }
-
-    const orderItems = cartItems.map(item => ({
-      order_id: order.id,
-      product_id: item.product_id,
-      product_title: item.product_title,
-      product_image: item.product_image,
-      product_price: item.product_price,
-      quantity: item.quantity
-    }));
-
-    const { error: itemsError } = await supabase
-      .from("order_items")
-      .insert(orderItems);
-
-    if (itemsError) {
-      toast.error("Failed to create order items");
-      return;
-    }
-
-    await supabase
-      .from("cart_items")
-      .delete()
-      .eq("user_id", user.id);
-
-    toast.success("Order placed successfully!");
-    setCartItems([]);
-    navigate("/account");
+  const handleCheckout = () => {
+    toast.success("Checkout feature coming soon!");
+    toast.info("Order summary: $" + totalAmount.toFixed(2));
   };
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 container mx-auto px-4 py-12 text-center">
-          <ShoppingBag className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-          <h1 className="text-2xl font-bold mb-4">Please Login</h1>
-          <p className="text-muted-foreground mb-6">You need to login to view your cart</p>
-          <Button onClick={() => navigate("/auth")}>Go to Login</Button>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   if (loading) {
     return (
@@ -201,7 +101,7 @@ const Cart = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.product_id, item.quantity - 1)}
                           >
                             -
                           </Button>
@@ -209,7 +109,7 @@ const Cart = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.product_id, item.quantity + 1)}
                           >
                             +
                           </Button>
@@ -217,7 +117,7 @@ const Cart = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => removeItem(item.product_id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

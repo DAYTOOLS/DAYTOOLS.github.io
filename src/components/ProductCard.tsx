@@ -1,10 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { cartStorage } from "@/lib/cart-storage";
 
 interface ProductCardProps {
   id: string;
@@ -27,70 +27,26 @@ const ProductCard = ({
   orders = 0,
   discount,
 }: ProductCardProps) => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const discountPercent = discount || (originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0);
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleAddToCart = async (e: React.MouseEvent) => {
+  const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    if (!user) {
-      toast.error("Please login to add items to cart");
-      navigate("/auth");
-      return;
-    }
-
     setLoading(true);
 
-    const { data: existingItem } = await supabase
-      .from("cart_items")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("product_id", id)
-      .maybeSingle();
-
-    if (existingItem) {
-      const { error } = await supabase
-        .from("cart_items")
-        .update({ quantity: existingItem.quantity + 1 })
-        .eq("id", existingItem.id);
-
-      if (error) {
-        toast.error("Failed to update cart");
-      } else {
-        toast.success("Cart updated!");
-      }
-    } else {
-      const { error } = await supabase
-        .from("cart_items")
-        .insert({
-          user_id: user.id,
-          product_id: id,
-          product_title: title,
-          product_image: image,
-          product_price: price,
-          quantity: 1
-        });
-
-      if (error) {
-        toast.error("Failed to add to cart");
-      } else {
-        toast.success("Added to cart!");
-      }
+    try {
+      cartStorage.addItem({
+        product_id: id,
+        product_title: title,
+        product_image: image,
+        product_price: price,
+      });
+      
+      toast.success("Added to cart!");
+    } catch (error) {
+      toast.error("Failed to add to cart");
     }
 
     setLoading(false);
