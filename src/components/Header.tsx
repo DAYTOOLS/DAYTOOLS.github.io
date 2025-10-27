@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useCart } from "@/hooks/use-cart";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +16,7 @@ import {
 const Header = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
+  const { cartCount } = useCart();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -117,8 +119,15 @@ const Header = () => {
               <Heart className="h-6 w-6" />
               <span className="text-xs">Wishlist</span>
             </Link>
-            <Link to="/cart" className="relative flex flex-col items-center gap-1 hover:text-primary transition-colors">
-              <ShoppingCart className="h-6 w-6" />
+            <Link to="/cart" className="relative flex flex-col items-center gap-1 hover:text-primary transition-colors" data-testid="link-cart">
+              <div className="relative">
+                <ShoppingCart className="h-6 w-6" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-secondary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center" data-testid="text-cart-count">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
               <span className="text-xs">Cart</span>
             </Link>
           </div>

@@ -44,6 +44,9 @@ const ProductCard = ({
         product_price: price,
       });
       
+      // Dispatch event to update cart count in header
+      window.dispatchEvent(new Event('cart-updated'));
+      
       toast.success("Added to cart!");
     } catch (error) {
       toast.error("Failed to add to cart");

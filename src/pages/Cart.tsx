@@ -35,6 +35,8 @@ const Cart = () => {
       setCartItems(cartItems.map(item => 
         item.product_id === productId ? { ...item, quantity: newQuantity } : item
       ));
+      // Dispatch event to update cart count
+      window.dispatchEvent(new Event('cart-updated'));
     } catch (error) {
       toast.error("Failed to update quantity");
     }
@@ -44,6 +46,8 @@ const Cart = () => {
     try {
       cartStorage.removeItem(productId);
       setCartItems(cartItems.filter(item => item.product_id !== productId));
+      // Dispatch event to update cart count
+      window.dispatchEvent(new Event('cart-updated'));
       toast.success("Item removed from cart");
     } catch (error) {
       toast.error("Failed to remove item");
