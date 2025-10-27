@@ -17,6 +17,8 @@ import SiteMap from "./pages/SiteMap";
 import Auth from "./pages/Auth";
 import Cart from "./pages/Cart";
 import Account from "./pages/Account";
+import HelpCenter from "./pages/HelpCenter";
+import ShippingInfo from "./pages/ShippingInfo";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +41,11 @@ const App = () => (
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/sitemap" element={<SiteMap />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/help-center" element={<HelpCenter />} />
+          <Route path="/shipping" element={<ShippingInfo />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

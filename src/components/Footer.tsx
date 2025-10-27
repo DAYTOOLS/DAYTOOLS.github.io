@@ -10,11 +10,11 @@ const Footer = () => {
           <div>
             <h3 className="font-bold text-lg mb-4">Customer Service</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/contact" className="hover:text-primary transition-colors">Help Center</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">Report Abuse</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">Submit a Dispute</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">Policies & Rules</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">Online Inquiry</Link></li>
+              <li><Link to="/help-center" className="hover:text-primary transition-colors">Help Center</Link></li>
+              <li><Link to="/contact" className="hover:text-primary transition-colors">Report Abuse</Link></li>
+              <li><Link to="/contact" className="hover:text-primary transition-colors">Submit a Dispute</Link></li>
+              <li><Link to="/terms" className="hover:text-primary transition-colors">Policies & Rules</Link></li>
+              <li><Link to="/contact" className="hover:text-primary transition-colors">Online Inquiry</Link></li>
             </ul>
           </div>
 
@@ -22,11 +22,11 @@ const Footer = () => {
           <div>
             <h3 className="font-bold text-lg mb-4">Shopping Guide</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="#" className="hover:text-primary transition-colors">Quick Order</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">Shipping Rates</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">Return Policy</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">Payment Methods</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">Tracking Order</Link></li>
+              <li><Link to="/products" className="hover:text-primary transition-colors">Quick Order</Link></li>
+              <li><Link to="/shipping" className="hover:text-primary transition-colors">Shipping Rates</Link></li>
+              <li><Link to="/shipping" className="hover:text-primary transition-colors">Return Policy</Link></li>
+              <li><Link to="/help-center" className="hover:text-primary transition-colors">Payment Methods</Link></li>
+              <li><Link to="/account" className="hover:text-primary transition-colors">Tracking Order</Link></li>
             </ul>
           </div>
 
@@ -35,22 +35,22 @@ const Footer = () => {
             <h3 className="font-bold text-lg mb-4">Collaborate with Us</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link to="/sellers" className="hover:text-primary transition-colors">Partnerships</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">Affiliate Program</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">DS Center</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">Seller Log In</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">Vendor Registration</Link></li>
+              <li><Link to="/sellers" className="hover:text-primary transition-colors">Affiliate Program</Link></li>
+              <li><Link to="/sellers" className="hover:text-primary transition-colors">DS Center</Link></li>
+              <li><Link to="/auth" className="hover:text-primary transition-colors">Seller Log In</Link></li>
+              <li><Link to="/sellers" className="hover:text-primary transition-colors">Vendor Registration</Link></li>
             </ul>
           </div>
 
           {/* About DHgate */}
           <div>
-            <h3 className="font-bold text-lg mb-4">About DHgate</h3>
+            <h3 className="font-bold text-lg mb-4">About DAYTOOLS</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link to="/about" className="hover:text-primary transition-colors">Company Overview</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">DHgate Blog</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">News & Events</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">Careers</Link></li>
-              <li><Link to="#" className="hover:text-primary transition-colors">Global Offices</Link></li>
+              <li><Link to="/about" className="hover:text-primary transition-colors">DAYTOOLS Blog</Link></li>
+              <li><Link to="/about" className="hover:text-primary transition-colors">News & Events</Link></li>
+              <li><Link to="/contact" className="hover:text-primary transition-colors">Careers</Link></li>
+              <li><Link to="/contact" className="hover:text-primary transition-colors">Global Offices</Link></li>
             </ul>
           </div>
 
